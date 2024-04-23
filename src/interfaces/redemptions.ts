@@ -1,4 +1,4 @@
-export const interface Redemptions {
+export interface Redemptions {
   id: string;
   user_id: string;
   reward_id: string;

@@ -2,7 +2,7 @@
   "name": "thanx-node",
   "version": "1.0.0",
   "description": "API for redemptions management",
-  "main": "src/server.ts",
+  "main": "dist/index.js",
   "type": "module",
   "engines": {
     "node": "20.11.1"
@@ -10,7 +10,7 @@
   "scripts": {
     "build": "npx tsc -p .",
     "dev": "NODE_OPTIONS='--import=tsx' node --watch --env-file=.env src/index.ts",
-    "prod": "npx tsc -p . && NODE_ENV=prod node dist/server.js"
+    "prod": "npx tsc -p . && NODE_ENV=prod node dist/index.js"
   },
   "keywords": [],
   "author": "Marcos Moura",

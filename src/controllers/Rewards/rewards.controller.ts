@@ -2,7 +2,7 @@ import { Request, Response } from 'express'
 import { FieldPacket, OkPacket, ResultSetHeader, RowDataPacket } from 'mysql2'
 
 import { mysqlConnection } from '../../config/database/mysql.config'
-import { Reward } from '../interfaces/rewards.ts'
+import { Reward } from '../interfaces/rewards'
 import { REWARDS_QUERY } from '../../queries/rewards.query'
 
 type ResultQuery = [RowDataPacket[] | RowDataPacket[][] | OkPacket | OkPacket[] | ResultSetHeader, FieldPacket[]]

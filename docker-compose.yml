@@ -1,0 +1,47 @@
+services:
+  mysql:
+    container_name: mysqlservice
+    image: mysql:8.0
+    command: --default-authentication-plugin=mysql_native_password
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: thanx
+      MYSQL_DATABASE: thanx
+      MYSQL_USER: thanx
+      MYSQL_PASSWORD: thanx
+      SERVICE_NAME: mysql
+    volumes:
+      - ./dbinit/init.sql:/docker-entrypoint-initdb.d/0_init.sql
+      - $HOME/database:/var/lib/mysql
+    ports:
+      - "3306:3306"
+    expose:
+      - 3306
+    networks:
+      - apinetwork
+
+  thanxapiredeem:
+    container_name: apiservice
+    build: .
+    image: thanxapiredeem:v1
+    ports:
+      - "3001:3001"
+    expose:
+      - 3001
+    depends_on:
+      - mysql
+    environment:
+      DB_HOST: mysql
+      DB_USER: thanx
+      DB_PASSWORD: thanx
+      DB_NAME: thanx
+      DB_PORT: 3306
+      DB_CONNECTION_LIMIT: 10
+      SERVICE_NAME: apiservice
+    networks:
+      - apinetwork
+  
+networks:
+  apinetwork:
+    driver: bridge
+    

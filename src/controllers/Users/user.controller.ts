@@ -3,7 +3,7 @@ import { FieldPacket, OkPacket, ResultSetHeader, RowDataPacket } from 'mysql2'
 import bcrypt from 'bcrypt'
 
 import { mysqlConnection } from '../../config/database/mysql.config'
-import { User } from '../interfaces/user.ts'
+import { User } from '../interfaces/user'
 import { USER_QUERY } from '../../queries/user.query'
 
 type ResultQuery = [RowDataPacket[] | RowDataPacket[][] | OkPacket | OkPacket[] | ResultSetHeader, FieldPacket[]]
@@ -41,7 +41,8 @@ export const getUser = async (req: Request, res: Response): Promise<Response<Use
 
 export const createUser = async (req: Request, res: Response): Promise<Response<User>> => {
   const { name, username, email, password } = req.body
-  const encryptedPassword = await bcrypt.hash(password, 10)
+  const salt = bcrypt.genSaltSync(10)
+  const encryptedPassword = bcrypt.hashSync(password, salt)
 
   try {
     const pool = await mysqlConnection();
