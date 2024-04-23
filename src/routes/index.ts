@@ -1,7 +1,7 @@
 import { Router } from 'express'
 import { getUsers, createUser, getUser, deleteUser, updateUser } from '../controllers/Users/user.controller'
-import { getRewardPointsBalance, addPointsToUser } from '../controllers/RewardPoints/reward.points.balance.controller'
-import { getAllRewards } from '../controllers/Rewards/rewards.controller'
+import { getRewardPointsBalance, addPointsToUser, getRewardsPointsBalanceFromUser } from '../controllers/RewardPoints/reward.points.balance.controller'
+import { getAllRewards, createReward } from '../controllers/Rewards/rewards.controller'
 import { getRedemptions } from '../controllers/Redemptions/redemptions.controller'
 
 export const pointsRoutes = Router()
@@ -21,11 +21,15 @@ userRoutes.route('/:userId')
 pointsRoutes.route('/balance')
   .get(getRewardPointsBalance)
 
+pointsRoutes.route('/balance/:id')
+  .get(getRewardsPointsBalanceFromUser)
+
 pointsRoutes.route('/add')
   .post(addPointsToUser)
 
 rewardsRoutes.route('/')
   .get(getAllRewards)
+  .post(createReward)
 
 redemptionsRoutes.route('/')
   .get(getRedemptions)

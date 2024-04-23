@@ -16,6 +16,28 @@ export const getAllRewards = async (req: Request, res: Response): Promise<Respon
   } catch (err: unknown) {
     console.error(err)
 
-    return res.status(500).send('An error occurred')
+    return res.status(500).send('An error occurred getting the rewards')
+  }
+}
+
+export const createReward = async (req: Request, res: Response) => {
+  try {
+    const pool = await mysqlConnection()
+    const { name, description, points_required, quantity_available } = req.body
+
+    const reward = {
+      name: name,
+      description: description,
+      pointsRequired: points_required,
+      quantityAvailable: quantity_available
+    }
+
+    const result: ResultQuery = await pool.query(REWARDS_QUERY.CREATE_REWARD, Object.values(reward))
+
+    return res.status(200).json(reward)
+  } catch (err: unknown) {
+    console.error(err)
+
+    return res.status(500).send('An error occurred creating reward')
   }
 }
