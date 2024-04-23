@@ -1,7 +1,7 @@
 import express, { Application, Request, Response } from 'express'
 import cors from 'cors'
 
-import { redeemRoutes, userRoutes } from './routes'
+import { pointsRoutes, userRoutes, rewardsRoutes, redemptionsRoutes } from './routes'
 
 export class Server {
   private readonly server: Application
@@ -23,9 +23,9 @@ export class Server {
   }
 
   private routes(): void {
+    this.server.use('/points', pointsRoutes)
     this.server.use('/users', userRoutes)
-    this.server.get('/users', (req: Request, res: Response) => {
-      return res.status(200).send({ message: 'server responding' })
-    })
+    this.server.use('/rewards', rewardsRoutes)
+    this.server.use('/redemptions', redemptionsRoutes)
   }
 }

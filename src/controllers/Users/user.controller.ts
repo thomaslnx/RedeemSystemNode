@@ -1,5 +1,6 @@
 import { Request, Response } from 'express'
 import { FieldPacket, OkPacket, ResultSetHeader, RowDataPacket } from 'mysql2'
+import bcrypt from 'bcrypt'
 
 import { mysqlConnection } from '../../config/database/mysql.config'
 import { User } from '../interfaces/user.ts'
@@ -9,7 +10,7 @@ type ResultQuery = [RowDataPacket[] | RowDataPacket[][] | OkPacket | OkPacket[] 
 
 export const getUsers = async (req: Request, res: Response): Promise<Response<User[]>> => {
   try {
-    const pool = await mysqlConnection();
+    const pool = await mysqlConnection()
     const result: ResultQuery = await pool.query(USER_QUERY.SELECT_USERS)
 
     return res.status(200).send(result[0])
@@ -39,17 +40,20 @@ export const getUser = async (req: Request, res: Response): Promise<Response<Use
 }
 
 export const createUser = async (req: Request, res: Response): Promise<Response<User>> => {
-  const user: User = {...req.body}
+  const { name, username, email, password } = req.body
+  const encryptedPassword = await bcrypt.hash(password, 10)
 
   try {
     const pool = await mysqlConnection();
-    const result: ResultQuery = await pool.query(USER_QUERY.CREATE_USER, Object.values(user))
-
-    user = {
-      id: (result[0] as ResultSetHeader).insertId, ...req.body
+    const newUser = {
+      name,
+      username,
+      email,
+      password: encryptedPassword
     }
+    const result: ResultQuery = await pool.query(USER_QUERY.CREATE_USER, Object.values(newUser))
     
-    return res.status(200).send(user)
+    return res.status(200).send(newUser)
 
   } catch (err: unknown) {
     console.error(err)
