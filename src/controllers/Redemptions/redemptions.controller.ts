@@ -83,3 +83,41 @@ export const redeemReward = async (req: Request, res: Response): Promise<Respons
     return res.status(500).send('An error occurred retrieving the redemptions')
   }
 }
+
+export const redeemHistory = async (req: Request, res: Response): Promise<Response<Redemptions>> => {
+  const { user_id } = req.body
+  try {
+    const pool = await mysqlConnection()
+    let rewardName
+    let redemptionDate
+    let pointsSpent
+
+    const history = await pool.query(`SELECT r.name AS name, \
+                                             rd.id AS id, \
+                                             rd.user_id, \
+                                             rd.redemption_date, \
+                                             rd.points_spent \
+                                      FROM redemptions rd \
+                                      JOIN users u ON rd.user_id = ${user_id}
+                                      JOIN rewards r ON rd.reward_id = r.id \
+                                      WHERE u.id = ${user_id}`)
+
+    const historyData = history[0].map(redHistory => {
+      rewardName = redHistory.name
+      redemptionDate = redHistory.redemption_date
+      pointsSpent = redHistory.points_spent
+
+      return ({
+        rewardName,
+        redemptionDate,
+        pointsSpent
+      })
+    })
+
+    return res.status(200).json(historyData)
+  } catch (err: unknown) {
+    console.error(err)
+
+    return res.status(500).send('An error occurred retrieving the redemptions history')
+  }
+}

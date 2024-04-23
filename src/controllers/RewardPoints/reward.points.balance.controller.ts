@@ -24,8 +24,9 @@ export const getRewardsPointsBalanceFromUser = async (req: Request, res: Respons
   try {
     const { id } = req.params
     const pool = await mysqlConnection()
-    const result: ResultQuery = await pool.query(`SELECT reward_points.points_balance, users.id AS user_id, users.name, users.username, users.email FROM users LEFT JOIN reward_points on reward_points.user_id=users.id WHERE users.id = ${id
-    }`)
+    const result: ResultQuery = await pool.query(`SELECT reward_points.points_balance, users.id AS user_id, \
+      users.name, users.username, users.email FROM users LEFT JOIN reward_points on \
+      reward_points.user_id=users.id WHERE users.id = ${id}`)
 
     if (!result[0].length) {
       return res.status(404).json({ message: 'User not found!' })
