@@ -1,0 +1,500 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Rewards redemption management system",
+    "description": "This project aims demonstrate my development skills for hiring process",
+    "termsOfService": "http://localhost:3001/terms",
+    "contact": {
+      "email": "marcos.msilva10@gmail.com"
+    },
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:3001",
+      "description": "initial path to the test API"
+    }
+  ],
+  "paths": {
+    "/users": {
+      "post": {
+        "summary": "Add new users to the system",
+        "description": "This route create new users",
+        "tags": ["Users"],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#components/schemas/User"
+              },
+              "examples": {
+                "user": {
+                  "value": {
+                    "name": "John Doe",
+                    "username": "johndoe",
+                    "email": "johndoe@example.com",
+                    "password": "123456"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "400": {
+            "description": "Error! username or email already exists!"
+          },
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "items": {
+                    "$ref": "#components/schemas/User"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "description": "List all users in database",
+        "summary": "Retrieve all users added",
+        "tags": ["Users"],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "items": {
+                    "$ref": "#components/schemas/User"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users/{userId}": {
+      "put": {
+        "summary": "Update user data",
+        "description": "Makes the update for some data of the user by its id",
+        "tags": ["Users"],
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "description": "Id do user for search",
+            "required": true
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#components/schemas/User"
+              },
+              "examples": {
+                "user": {
+                  "value": {
+                    "name": "John Doe",
+                    "username": "johndoe",
+                    "email": "johndoe@example.com",
+                    "password": "123456"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "400": {
+            "description": "Error! User not found!"
+          },
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "items": {
+                    "$ref": "#components/schemas/User"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete a user",
+        "description": "Delete users by its id",
+        "tags": ["Users"],
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "description": "Id do user for search",
+            "required": true
+          }
+        ],
+        "responses": {
+          "400": {
+            "description": "This user cannot be deleted because he has made redemptions!"
+          },
+          "404": {
+            "description": "Error! User not found!"
+          },
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "items": {
+                    "$ref": "#components/schemas/User"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/points/balance": {
+      "get": {
+        "description": "List the points balance from all users",
+        "summary": "Retrieve all users points balances",
+        "tags": ["Points"],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "items": {
+                    "$ref": "#components/schemas/Point"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "This user has no points!"
+          }
+        }
+      }
+    },
+    "/points/add": {
+      "post": {
+        "summary": "Add points to users",
+        "description": "Add points to the users",
+        "tags": ["Points"],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#components/schemas/Point"
+              },
+              "examples": {
+                "points": {
+                  "value": {
+                    "points_balance": 100,
+                    "user_id": 5
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "400": {
+            "description": "User not found!"
+          },
+          "200": {
+            "description": "Points added successfully"
+          }
+        }
+      }
+    },
+    "/rewards": {
+      "get": {
+        "description": "List all rewards available",
+        "summary": "List all rewards available",
+        "tags": ["Rewards"],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "items": {
+                    "$ref": "#components/schemas/Reward"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Create a new reward item",
+        "description": "Create a new reward item",
+        "tags": ["Rewards"],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#components/schemas/User"
+              },
+              "examples": {
+                "reward": {
+                  "value": {
+                    "name": "Chess Board",
+                    "description": "Chess Board Game",
+                    "points_required": 40,
+                    "quantity_available": 16
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Reward created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "items": {
+                    "$ref": "#components/schemas/Reward"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "An error occurred creating reward"
+          }
+        }
+      }
+    },
+    "/redemptions": {
+      "get": {
+        "description": "List all redemptions made by the users",
+        "summary": "List all redemptions made by the users",
+        "tags": ["Redemptions"],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "items": {
+                    "$ref": "#components/schemas/Redemption"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "This user has no points!"
+          }
+        }
+      }
+    },
+    "/redemptions/redeem": {
+      "post": {
+        "summary": "Make a new redeem of some reward according user points balance",
+        "description": "Make a new redeem of some reward according user points balance",
+        "tags": ["Redemptions"],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#components/schemas/Redemption"
+              },
+              "examples": {
+                "reward": {
+                  "value": {
+                    "user_id": 5,
+                    "reward_id": 2,
+                    "how_many_items": 3,
+                    "points_spent": 45
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Retrieve the redeem history from a user",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "items": {
+                    "$ref": "#components/schemas/Redeem"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "User not found!"
+          },
+          "400": {
+            "description": "Quantity required greater than available!"
+          },
+          "500": {
+            "description": "An error occurred retrieving the redemptions"
+          }
+        }
+      }
+    },
+    "/redemptions/history/{userId}": {
+      "get": {
+        "description": "List all rewards available",
+        "summary": "List all rewards available",
+        "tags": ["Redemptions"],
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "description": "Id do user for search",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "items": {
+                    "$ref": "#components/schemas/RedeemHistory"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "An error occurred retrieving the redemptions history"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "User": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "username": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string"
+          }
+        }
+      },
+      "Point": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "user_id": {
+            "type": "string"
+          },
+          "points_balance": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "username": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          }
+        }
+      },
+      "Reward": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "points_required": {
+            "type": "string"
+          },
+          "quantity_available": {
+            "type": "string"
+          }
+        }
+      },
+      "Redemption": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "user_id": {
+            "type": "string"
+          },
+          "reward_id": {
+            "type": "string"
+          },
+          "redemption_date": {
+            "type": "string"
+          },
+          "points_spent": {
+            "type": "string"
+          }
+        }
+      },
+      "RedeemHistory": {
+        "type": "object",
+        "properties": {
+          "rewardName": {
+            "type": "string"
+          },
+          "redemptionDate": {
+            "type": "string"
+          },
+          "pointsSpent": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}

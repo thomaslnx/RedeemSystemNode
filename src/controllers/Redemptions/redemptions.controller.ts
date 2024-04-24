@@ -85,7 +85,7 @@ export const redeemReward = async (req: Request, res: Response): Promise<Respons
 }
 
 export const redeemHistory = async (req: Request, res: Response): Promise<Response<Redemptions>> => {
-  const { user_id } = req.body
+  const { userId } = req.params
   try {
     const pool = await mysqlConnection()
     let rewardName
@@ -98,9 +98,9 @@ export const redeemHistory = async (req: Request, res: Response): Promise<Respon
                                              rd.redemption_date, \
                                              rd.points_spent \
                                       FROM redemptions rd \
-                                      JOIN users u ON rd.user_id = ${user_id}
+                                      JOIN users u ON rd.user_id = ${userId}
                                       JOIN rewards r ON rd.reward_id = r.id \
-                                      WHERE u.id = ${user_id}`)
+                                      WHERE u.id = ${userId}`)
 
     const historyData = history[0].map(redHistory => {
       rewardName = redHistory.name

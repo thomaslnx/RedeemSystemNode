@@ -37,5 +37,5 @@ redemptionsRoutes.route('/')
 redemptionsRoutes.route('/redeem')
 .post(redeemReward)
 
-redemptionsRoutes.route('/history')
+redemptionsRoutes.route('/history/:userId')
   .get(redeemHistory)

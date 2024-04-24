@@ -52,6 +52,12 @@ export const createUser = async (req: Request, res: Response): Promise<Response<
       email,
       password: encryptedPassword
     }
+
+    const checkIfUserAlreadyExist = await pool.query(`SELECT * FROM users WHERE email = '${email}'`)
+
+    if (checkIfUserAlreadyExist[0].length) {
+      return res.status(400).json({ message: 'Error! username or email already exists!'})
+    }
     const result: ResultQuery = await pool.query(USER_QUERY.CREATE_USER, Object.values(newUser))
     
     return res.status(200).send(newUser)
@@ -64,14 +70,33 @@ export const createUser = async (req: Request, res: Response): Promise<Response<
 }
 
 export const updateUser = async (req: Request, res: Response): Promise<Response<User>> => {
-  const user: User = {...req.body}
+  const { name, username, email, password } = req.body
+  const { userId } = req.params
+  let updateDynamicQuery = []
 
   try {
     const pool = await mysqlConnection();
     const result: ResultQuery = await pool.query(USER_QUERY.SELECT_USER, [req.params.userId])
 
     if (result[0].length > 0) {
-      const updateUserQuery = await pool.query(USER_QUERY.UPDATE_USER, [...Object.values(user), req.params.userId])
+      if (name !== null && name !== undefined) {
+        updateDynamicQuery.push(`name = '${name}'`)
+      }
+
+      if (username !== null && username !== undefined) {
+        updateDynamicQuery.push(`username = '${username}'`)
+      }
+
+      if (email !== null && email !== undefined) {
+        updateDynamicQuery.push(`email = '${email}'`)
+      }
+
+      if (password !== null && password !== undefined) {
+        updateDynamicQuery.push(`password = '${password}'`)
+      }
+
+      const updateUserQuery = await pool.query(`UPDATE users SET ${updateDynamicQuery.join(', ')} WHERE id = ${userId}`)
+
       return res.status(200).send('User updated')
     } else {
       return res.status(404).send('User not found')
@@ -84,12 +109,23 @@ export const updateUser = async (req: Request, res: Response): Promise<Response<
 }
 
 export const deleteUser = async (req: Request, res: Response): Promise<Response<User>> => {
+  const { userId } = req.params
   try {
     const pool = await mysqlConnection();
-    const result: ResultQuery = await pool.query(USER_QUERY.DELETE_USER, [req.params.userId])
+    const checkIfDeletingUserHasRedemptions = await pool.query(`SELECT * FROM redemptions WHERE user_id = 5`)
+
+    if (checkIfDeletingUserHasRedemptions[0].length) {
+      return res.status(400).json({
+        message: 'This user cannot be deleted because he has made redemptions!'
+      })
+    } else {
+      const result: ResultQuery = await pool.query(USER_QUERY.DELETE_USER, [userId])
+      return res.status(200).send('User deleted')
+    }
 
     if (result[0].length > 0) {
-      const updateUserQuery = await pool.query(USER_QUERY.DELETE_USER, [req.params.userId])
+      const deleteUserQuery = await pool.query(USER_QUERY.DELETE_USER, [userId])
+
       return res.status(200).send('User deleted')
     } else {
       return res.status(404).send('User not found')

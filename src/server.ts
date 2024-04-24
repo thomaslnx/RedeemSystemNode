@@ -1,6 +1,8 @@
 import express, { Application, Request, Response } from 'express'
 import cors from 'cors'
+import swaggerUi from 'swagger-ui-express'
 
+import swaggerDocs from './swagger.json'
 import { pointsRoutes, userRoutes, rewardsRoutes, redemptionsRoutes } from './routes'
 
 export class Server {
@@ -23,6 +25,7 @@ export class Server {
   }
 
   private routes(): void {
+    this.server.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs))
     this.server.use('/points', pointsRoutes)
     this.server.use('/users', userRoutes)
     this.server.use('/rewards', rewardsRoutes)

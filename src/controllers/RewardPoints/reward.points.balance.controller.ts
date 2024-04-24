@@ -29,7 +29,7 @@ export const getRewardsPointsBalanceFromUser = async (req: Request, res: Respons
       reward_points.user_id=users.id WHERE users.id = ${id}`)
 
     if (!result[0].length) {
-      return res.status(404).json({ message: 'User not found!' })
+      return res.status(404).json({ message: 'This user has no points!' })
     }
 
     return res.status(200).send(result[0])
@@ -59,9 +59,7 @@ export const addPointsToUser = async (req: Request, res: Response): Promise<Resp
     const result: ResultQuery = await pool.query(`UPDATE reward_points SET points_balance = ${points_balance} WHERE user_id = ${user_id}`)
 
     return res.status(200).json({
-      user: result[0].user_id,
-      points: result[0].points_balance,
-      last_updated: result[0].updated_at
+      message: 'Points added successfully'
     })
   } catch (err: unknown) {
     console.error(err)
