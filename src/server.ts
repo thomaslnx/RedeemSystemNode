@@ -3,7 +3,7 @@ import cors from 'cors'
 import swaggerUi from 'swagger-ui-express'
 
 import swaggerDocs from './swagger.json'
-import { pointsRoutes, userRoutes, rewardsRoutes, redemptionsRoutes } from './routes'
+import { pointsRoutes, userRoutes, rewardsRoutes, redemptionsRoutes } from './routes/index.ts'
 
 export class Server {
   private readonly server: Application

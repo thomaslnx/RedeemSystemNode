@@ -1,18 +1,16 @@
 import { Request, Response } from 'express'
 import { FieldPacket, OkPacket, ResultSetHeader, RowDataPacket } from 'mysql2'
 
-import { mysqlConnection } from '../../config/database/mysql.config'
-import { Redemptions } from '../interfaces/redemptions'
-import { REDEMPTIONS_QUERY } from '../../queries/redemptions.query'
-
-type ResultQuery = [RowDataPacket[] | RowDataPacket[][] | OkPacket | OkPacket[] | ResultSetHeader, FieldPacket[]]
+import { mysqlConnection } from '../../config/database/mysql.config.ts'
+import { Redemptions } from '../../interfaces/redemptions.ts'
+import { REDEMPTIONS_QUERY } from '../../queries/redemptions.query.ts'
 
 export const getRedemptions = async (req: Request, res: Response): Promise<Response<Redemptions>> => {
   try {
     const pool = await mysqlConnection()
-    const result: ResultQuery = await pool.query(REDEMPTIONS_QUERY.SELECT_REDEMPTIONS)
+    const [ results ]= await pool.query<RowDataPacket[]>(REDEMPTIONS_QUERY.SELECT_REDEMPTIONS)
 
-    return res.status(200).send(result[0])
+    return res.status(200).send(results)
   } catch (err: unknown) {
     console.error(err)
 
@@ -25,47 +23,56 @@ export const redeemReward = async (req: Request, res: Response): Promise<Respons
 
   try {
     const pool = await mysqlConnection()
-    const reward = await pool.query(`SELECT * FROM rewards WHERE id = ${reward_id}`)
-    if (!reward[0].length) {
+    const [ reward ] = await pool.query<RowDataPacket[]>(`SELECT * FROM rewards WHERE id = ${reward_id}`)
+    if (!reward.length) {
       return res.status(404).json({ message: 'Reward not found' })
     }
 
     let rewardId
     let points_required
     let quantity_available
-    let currentUserPointsBalance
+    let currentUserPointsBalance: number = 0
 
-    const rewardData = reward[0].map(item => {
+    const rewardData = reward.map(item => {
       rewardId = item.id
       points_required = item.points_required
       quantity_available = item.quantity_available
     })
 
-    const user = await pool.query(`SELECT reward_points.points_balance, users.id AS user_id, \
+    const [ user ] = await pool.query<RowDataPacket[]>(`SELECT reward_points.points_balance, users.id AS user_id, \
       users.name, users.username, users.email FROM users LEFT JOIN reward_points on \
       reward_points.user_id=users.id WHERE users.id = ${user_id}`)
 
-    const userData = user[0].map(user => currentUserPointsBalance = user.points_balance)
+    const userData = user.map(user => currentUserPointsBalance = user.points_balance)
 
-    if (!user[0].length) {
+    if (!user.length) {
       return res.status(404).json({ message: 'User not found' })
     }
 
-    if (how_many_items > quantity_available) {
-      return res.status(400).json({ message: 'Quantity required greater than available!' })
+    if (quantity_available !== undefined) {
+      if (how_many_items > quantity_available) {
+        return res.status(400).json({ message: 'Quantity required greater than available!' })
+      }
     }
 
     if (how_many_items < 1) {
       return res.status(400).json({ message: 'You have to provide at least 1 item to be redeemed' })
     }
 
-    const pointsRequiredToRedeem = points_required * how_many_items
+    let pointsRequiredToRedeem: number = 0
+    let rewardQuantityAvailableUpdated
+
+    if (points_required !== undefined){
+      pointsRequiredToRedeem = points_required * how_many_items
+    }
 
     if (pointsRequiredToRedeem > currentUserPointsBalance) {
       return res.status(400).json({ message: 'Your current points balance is not enough to redeem this item!'})
     }
 
-    const rewardQuantityAvailableUpdated = quantity_available - how_many_items
+    if (quantity_available !== undefined) {
+      rewardQuantityAvailableUpdated = quantity_available - how_many_items
+    }
     const userPointsBalanceUpdated = currentUserPointsBalance - pointsRequiredToRedeem
 
     // updating users points balance and reward quantity available
@@ -92,7 +99,7 @@ export const redeemHistory = async (req: Request, res: Response): Promise<Respon
     let redemptionDate
     let pointsSpent
 
-    const history = await pool.query(`SELECT r.name AS name, \
+    const [ history ] = await pool.query<RowDataPacket[]>(`SELECT r.name AS name, \
                                              rd.id AS id, \
                                              rd.user_id, \
                                              rd.redemption_date, \
@@ -102,7 +109,7 @@ export const redeemHistory = async (req: Request, res: Response): Promise<Respon
                                       JOIN rewards r ON rd.reward_id = r.id \
                                       WHERE u.id = ${userId}`)
 
-    const historyData = history[0].map(redHistory => {
+    const historyData = history.map(redHistory => {
       rewardName = redHistory.name
       redemptionDate = redHistory.redemption_date
       pointsSpent = redHistory.points_spent

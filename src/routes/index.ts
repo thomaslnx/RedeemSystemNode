@@ -1,8 +1,8 @@
 import { Router } from 'express'
-import { getUsers, createUser, getUser, deleteUser, updateUser } from '../controllers/Users/user.controller'
-import { getRewardPointsBalance, addPointsToUser, getRewardsPointsBalanceFromUser } from '../controllers/RewardPoints/reward.points.balance.controller'
-import { getAllRewards, createReward } from '../controllers/Rewards/rewards.controller'
-import { getRedemptions, redeemReward, redeemHistory } from '../controllers/Redemptions/redemptions.controller'
+import { getUsers, createUser, getUser, deleteUser, updateUser } from '../controllers/Users/user.controller.ts'
+import { getRewardPointsBalance, addPointsToUser, getRewardsPointsBalanceFromUser } from '../controllers/RewardPoints/reward.points.balance.controller.ts'
+import { getAllRewards, createReward } from '../controllers/Rewards/rewards.controller.ts'
+import { getRedemptions, redeemReward, redeemHistory } from '../controllers/Redemptions/redemptions.controller.ts'
 
 export const pointsRoutes = Router()
 export const userRoutes = Router()
