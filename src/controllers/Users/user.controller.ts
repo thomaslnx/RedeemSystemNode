@@ -20,11 +20,12 @@ export const getUsers = async (req: Request, res: Response): Promise<Response<Us
 }
 
 export const getUser = async (req: Request, res: Response): Promise<Response<User>> => {
+  const { userId } = req.params
   try {
     const pool = await mysqlConnection();
-    const [ results ] = await pool.query<RowDataPacket[]>(USER_QUERY.SELECT_USER, [req.params.userId])
+    const [ results ] = await pool.query<RowDataPacket[]>(USER_QUERY.SELECT_USER, userId)
 
-    if (results) {
+    if (results.length > 0) {
       return res.status(200).send(results)
     } else {
       return res.status(404).send('User not found')
