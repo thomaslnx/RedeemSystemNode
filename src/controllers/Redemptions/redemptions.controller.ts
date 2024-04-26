@@ -93,11 +93,13 @@ export const redeemReward = async (req: Request, res: Response): Promise<Respons
 
 export const redeemHistory = async (req: Request, res: Response): Promise<Response<Redemptions>> => {
   const { userId } = req.params
+
   try {
     const pool = await mysqlConnection()
     let rewardName
     let redemptionDate
     let pointsSpent
+    let historyId
 
     const [ history ] = await pool.query<RowDataPacket[]>(`SELECT r.name AS name, \
                                              rd.id AS id, \
@@ -110,11 +112,13 @@ export const redeemHistory = async (req: Request, res: Response): Promise<Respon
                                       WHERE u.id = ${userId}`)
 
     const historyData = history.map(redHistory => {
+      historyId = redHistory.id
       rewardName = redHistory.name
       redemptionDate = redHistory.redemption_date
       pointsSpent = redHistory.points_spent
 
       return ({
+        historyId,
         rewardName,
         redemptionDate,
         pointsSpent

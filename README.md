@@ -11,7 +11,7 @@ This project aims to evaluate my skills as a full-stack software engineer for a 
 This part of the entire project is the backend for receiving and manipulating the data sent by the front end of the redemption system.
 
 
-## Peoject Tech Stack
+## Project Tech Stack
 
 In this project, I used some rola-related tech stacks to achieve the challenge goal. Listed below:
 
@@ -43,6 +43,11 @@ http://localhost:3001/api-docs
 Once loader the Swagger web interface, operations like CREATE, READ, UPDATE and DELETE can be performed using it.
 
 I hope your team likes this project as much as I do of making. I put much effort and dedication into this project I hope you like it. Thanks for the time and attention.
+
+## Frontend Repository url:
+- Backend - [backend-repo](https://github.com/thomaslnx/RedeemSystemNext)
+
+https://github.com/thomaslnx/RedeemSystemNext
 
 ## Stay in touch
 
