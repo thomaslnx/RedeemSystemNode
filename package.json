@@ -10,6 +10,7 @@
   "scripts": {
     "build": "npx tsc -p .",
     "dev": "NODE_OPTIONS='--import=tsx' node --watch --env-file=.env src/index.ts",
+    "dev-docker": "NODE_OPTIONS='--import=tsx' node --watch src/index.ts",
     "prod": "npx tsc -p . && NODE_ENV=prod node dist/index.js"
   },
   "keywords": [],
