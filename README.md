@@ -44,10 +44,8 @@ Once loader the Swagger web interface, operations like CREATE, READ, UPDATE and 
 
 I hope your team likes this project as much as I do of making. I put much effort and dedication into this project I hope you like it. Thanks for the time and attention.
 
-## Frontend Repository url:
-- Backend - [backend-repo](https://github.com/thomaslnx/RedeemSystemNext)
-
-https://github.com/thomaslnx/RedeemSystemNext
+## Frontend Repository url: 
+- Frontend - [fontend-repo](https://github.com/thomaslnx/RedeemSystemNext)
 
 ## Stay in touch
 

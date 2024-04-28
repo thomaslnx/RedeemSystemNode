@@ -1,5 +1,5 @@
 import { Request, Response } from 'express'
-import { RowDataPacket } from 'mysql2/promise'
+import { RowDataPacket, ResultSetHeader } from 'mysql2/promise'
 import bcrypt from 'bcrypt'
 
 import { mysqlConnection } from '../../config/database/mysql.config.ts'
@@ -39,26 +39,29 @@ export const getUser = async (req: Request, res: Response): Promise<Response<Use
 }
 
 export const createUser = async (req: Request, res: Response): Promise<Response<User>> => {
-  const { name, username, email, password } = req.body
-  const salt = bcrypt.genSaltSync(10)
-  const encryptedPassword = bcrypt.hashSync(password, salt)
-
   try {
+    const { name, username, email, password } = req.body
+    const salt = bcrypt.genSaltSync(10)
+    const encryptedPassword = bcrypt.hashSync(password, salt)
+
     const pool = await mysqlConnection();
+
+    const [ results ] = await pool.query<RowDataPacket[]>(`SELECT * FROM users WHERE email = '${email}'`)
+    const [ userEmail ] = results.map(user => user.email)
+
     const newUser = {
       name,
       username,
       email,
-      password: encryptedPassword
+      password: encryptedPassword,
     }
-
-    const [ results ] = await pool.query<RowDataPacket[]>(`SELECT * FROM users WHERE email = '${email}'`)
-    const [ userEmail ] = results.map(user => user.email)
 
     if (email === userEmail) {
       return res.status(400).json({ message: 'Error! username or email already exists!'})
     } else {
       const result = await pool.query(USER_QUERY.CREATE_USER, Object.values(newUser))
+      const newlyCreatedUser = result[0].insertId
+      const addUserInitialPoints = await pool.query(`INSERT INTO reward_points (points_balance, user_id) VALUES(0, ${newlyCreatedUser})`)
 
       return res.status(200).json({ message: 'User created successfully!' })
     }

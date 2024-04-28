@@ -66,6 +66,10 @@ export const redeemReward = async (req: Request, res: Response): Promise<Respons
       pointsRequiredToRedeem = points_required * how_many_items
     }
 
+    if (points_spent < pointsRequiredToRedeem) {
+      return res.status(400).json({ message: 'The points quantity is not enough to redeem this item!'})
+    }
+
     if (pointsRequiredToRedeem > currentUserPointsBalance) {
       return res.status(400).json({ message: 'Your current points balance is not enough to redeem this item!'})
     }

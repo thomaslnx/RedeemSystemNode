@@ -27,7 +27,7 @@ export const getRewardsPointsBalanceFromUser = async (req: Request, res: Respons
       reward_points.user_id=users.id WHERE users.id = ${id}`)
 
     if (!results.length) {
-      return res.status(404).send('This user has no points!')
+      return res.status(404).send({ message: 'User not found!' })
     }
 
     return res.status(200).send(results)
